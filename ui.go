@@ -148,7 +148,7 @@ func (u *ui) initPods() {
 	})
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
-		case tcell.KeyEsc:
+		case tcell.KeyBackspace2:
 			u.app.SetFocus(u.namespaces)
 		case tcell.KeyEnter:
 			u.app.SetFocus(u.tabPage.tabs)
@@ -163,7 +163,7 @@ func (u *ui) initTabPages() {
 	contents.SetBorder(true).SetTitle(content[0])
 	contents.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
-		case tcell.KeyEsc:
+		case tcell.KeyBackspace2:
 			u.app.SetFocus(u.tabPage.tabs)
 		}
 		return event
@@ -184,6 +184,7 @@ func (u *ui) initTabPages() {
 				return
 			}
 			u.tabPage.tab = content[index]
+			u.tabPage.contents.SetTitle(content[index])
 			u.updateTabPageContents()
 		})
 	tabs.SetTitle("type").SetBorder(true)
@@ -206,7 +207,7 @@ func (u *ui) initTabPages() {
 	tabs.Highlight("0")
 	tabs.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
-		case tcell.KeyEsc:
+		case tcell.KeyBackspace2:
 			u.app.SetFocus(u.pods)
 		case tcell.KeyRight:
 			nextSlide()
