@@ -22,7 +22,7 @@ type ui struct {
 	tabPage    *tabPage
 }
 
-var content = []string{"Infos", "Events", "Logs"}
+var content = []string{"\nInfos", "Events", "Logs"}
 
 type tabPage struct {
 	ctx        context.Context
@@ -187,7 +187,7 @@ func (u *ui) initTabPages() {
 			u.tabPage.contents.SetTitle(content[index])
 			u.updateTabPageContents()
 		})
-	tabs.SetTitle("type").SetBorder(true)
+	tabs.SetTitle("[Enter 确认] [Backspace 回退] [↑ ↓ 切换] [Ctrl C 退出]").SetBorder(true)
 
 	previousSlide := func() {
 		slide, _ := strconv.Atoi(tabs.GetHighlights()[0])
