@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
 	_ "net/http/pprof"
 	"path/filepath"
@@ -16,9 +17,13 @@ func main() {
 	} else {
 		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
 	}
+	pprof := flag.Uint("pprof", 0, "the value is port (for example, 33060), enabling pprof debug mode")
+
 	flag.Parse()
 
-	go func() { http.ListenAndServe("0.0.0.0:6060", nil) }()
+	if *pprof != 0 {
+		go func() { http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", *pprof), nil) }()
+	}
 
 	if err := NewUi(NewClient(*kubeconfig)).Run(); err != nil {
 		panic(err)

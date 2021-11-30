@@ -24,6 +24,12 @@ Or you can specify kubeconfig:
 kubectl lazy -kubeconfig /root/.kube/config
 ```
 
+Enable the pprof debug mode:
+
+```shell
+kubectl lazy -pprof 8888
+```
+
 ## Uninstall
 
 ```shell
