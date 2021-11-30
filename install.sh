@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-version="0.0.2"
+version="0.0.3"
 
 while [ -n "$1" ]
 do

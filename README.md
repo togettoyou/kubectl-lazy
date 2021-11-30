@@ -11,7 +11,7 @@ curl -sSL https://mirror.ghproxy.com/https://raw.githubusercontent.com/togettoyo
 Or you can specify the version:
 
 ```shell
-curl -sSL https://mirror.ghproxy.com/https://raw.githubusercontent.com/togettoyou/kubectl-lazy/main/install.sh | bash -s -- -v 0.0.1
+curl -sSL https://mirror.ghproxy.com/https://raw.githubusercontent.com/togettoyou/kubectl-lazy/main/install.sh | bash -s -- -v 0.0.3
 ```
 
 ## Run
