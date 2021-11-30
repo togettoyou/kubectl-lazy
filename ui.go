@@ -128,6 +128,8 @@ func (u *ui) initNamespaces() {
 	})
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
+		case tcell.KeyBackspace2:
+			u.app.SetFocus(u.tabPage.contents)
 		case tcell.KeyEnter:
 			u.app.SetFocus(u.pods)
 		}
@@ -165,6 +167,8 @@ func (u *ui) initTabPages() {
 		switch event.Key() {
 		case tcell.KeyBackspace2:
 			u.app.SetFocus(u.tabPage.tabs)
+		case tcell.KeyEnter:
+			u.app.SetFocus(u.namespaces)
 		}
 		return event
 	})
@@ -187,7 +191,7 @@ func (u *ui) initTabPages() {
 			u.tabPage.contents.SetTitle(content[index])
 			u.updateTabPageContents()
 		})
-	tabs.SetTitle("[Enter 确认] [Backspace 回退] [↑ ↓ 切换] [Ctrl C 退出]").SetBorder(true)
+	tabs.SetTitle("[Enter 前进] [Backspace 后退] [↑ ↓ 切换] [Ctrl C 退出]").SetBorder(true)
 
 	previousSlide := func() {
 		slide, _ := strconv.Atoi(tabs.GetHighlights()[0])
