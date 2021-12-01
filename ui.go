@@ -33,6 +33,7 @@ type tabPage struct {
 	contents   *tview.Flex
 	infos      *tview.TextView
 	events     *tview.Table
+	containers *tview.List
 	logs       *tview.TextView
 }
 
@@ -175,20 +176,7 @@ func (u *ui) initTabPages() {
 		SetWordWrap(true).
 		SetBorder(true).
 		SetTitle(content[0])
-
-	events := tview.NewTable()
-	events.SetBorders(true)
-	events.SetTitle(content[1]).
-		SetBorder(true)
-
-	logs := tview.NewTextView()
-	logs.SetWordWrap(true).
-		SetBorder(true).
-		SetTitle(content[2])
-
-	contents.AddItem(infos, 0, 1, true)
-
-	contents.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+	infos.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
 		case tcell.KeyBackspace2:
 			u.app.SetFocus(u.tabPage.tabs)
@@ -197,6 +185,48 @@ func (u *ui) initTabPages() {
 		}
 		return event
 	})
+
+	events := tview.NewTable()
+	events.SetBorders(true)
+	events.SetTitle(content[1]).
+		SetBorder(true)
+	events.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyBackspace2:
+			u.app.SetFocus(u.tabPage.tabs)
+		case tcell.KeyEnter:
+			u.app.SetFocus(u.namespaces)
+		}
+		return event
+	})
+
+	containers := tview.NewList()
+	containers.SetBorder(true).SetTitle("Containers")
+	containers.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyBackspace2:
+			u.app.SetFocus(u.tabPage.tabs)
+		case tcell.KeyEnter:
+			u.app.SetFocus(u.tabPage.logs)
+		}
+		return event
+	})
+
+	logs := tview.NewTextView()
+	logs.SetWordWrap(true).
+		SetBorder(true).
+		SetTitle(content[2])
+	logs.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyBackspace2:
+			u.app.SetFocus(u.tabPage.containers)
+		case tcell.KeyEnter:
+			u.app.SetFocus(u.namespaces)
+		}
+		return event
+	})
+
+	contents.AddItem(infos, 0, 1, true)
 
 	tabs := tview.NewTextView().
 		SetTextAlign(tview.AlignCenter).
@@ -220,7 +250,8 @@ func (u *ui) initTabPages() {
 			case 1:
 				u.tabPage.contents.AddItem(u.tabPage.events, 0, 1, true)
 			case 2:
-				u.tabPage.contents.AddItem(u.tabPage.logs, 0, 1, true)
+				u.tabPage.contents.AddItem(u.tabPage.containers, 0, 1, true)
+				u.tabPage.contents.AddItem(u.tabPage.logs, 0, 3, false)
 			}
 			u.updateTabPageContents()
 		})
@@ -259,12 +290,13 @@ func (u *ui) initTabPages() {
 	})
 
 	u.tabPage = &tabPage{
-		tab:      content[0],
-		tabs:     tabs,
-		infos:    infos,
-		events:   events,
-		logs:     logs,
-		contents: contents,
+		tab:        content[0],
+		tabs:       tabs,
+		infos:      infos,
+		events:     events,
+		containers: containers,
+		logs:       logs,
+		contents:   contents,
 	}
 }
 
