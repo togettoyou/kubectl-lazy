@@ -29,7 +29,10 @@ type tabPage struct {
 	cancelFunc context.CancelFunc
 	tab        string
 	tabs       *tview.TextView
-	contents   *tview.TextView
+	contents   *tview.Flex
+	infos      *tview.TextView
+	events     *tview.Table
+	logs       *tview.TextView
 }
 
 func (u *ui) clearNamespaces() {
@@ -57,7 +60,9 @@ func (tp *tabPage) clear() {
 		tp.cancelFunc()
 	}
 	tp.ctx, tp.cancelFunc = context.WithCancel(context.Background())
-	tp.contents.Clear()
+	tp.infos.Clear()
+	tp.events.Clear()
+	tp.logs.Clear()
 }
 
 func NewUi(client *client) *ui {
@@ -161,8 +166,21 @@ func (u *ui) initPods() {
 }
 
 func (u *ui) initTabPages() {
-	contents := tview.NewTextView().SetText(content[0])
-	contents.SetBorder(true).SetTitle(content[0])
+
+	contents := tview.NewFlex()
+
+	infos := tview.NewTextView()
+	infos.SetWordWrap(true).SetBorder(true).SetTitle(content[0])
+
+	events := tview.NewTable()
+	events.SetBorders(true)
+	events.SetTitle(content[1]).SetBorder(true)
+
+	logs := tview.NewTextView()
+	logs.SetWordWrap(true).SetBorder(true).SetTitle(content[2])
+
+	contents.AddItem(infos, 0, 1, true)
+
 	contents.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
 		case tcell.KeyBackspace2:
@@ -183,12 +201,20 @@ func (u *ui) initTabPages() {
 				return
 			}
 			u.tabPage.clear()
+			u.tabPage.contents.Clear()
 			index, err := strconv.Atoi(added[0])
 			if err != nil {
 				return
 			}
 			u.tabPage.tab = content[index]
-			u.tabPage.contents.SetTitle(content[index])
+			switch index {
+			case 0:
+				u.tabPage.contents.AddItem(u.tabPage.infos, 0, 1, true)
+			case 1:
+				u.tabPage.contents.AddItem(u.tabPage.events, 0, 1, true)
+			case 2:
+				u.tabPage.contents.AddItem(u.tabPage.logs, 0, 1, true)
+			}
 			u.updateTabPageContents()
 		})
 	tabs.SetTitle("[Enter 前进] [Backspace 后退] [↑ ↓ 切换] [Ctrl C 退出]").SetBorder(true)
@@ -228,6 +254,9 @@ func (u *ui) initTabPages() {
 	u.tabPage = &tabPage{
 		tab:      content[0],
 		tabs:     tabs,
+		infos:    infos,
+		events:   events,
+		logs:     logs,
 		contents: contents,
 	}
 }
@@ -244,18 +273,31 @@ func (u *ui) updateTabPageContents() {
 			if err != nil {
 				return
 			}
-			u.tabPage.contents.SetText(string(infosData))
+			u.tabPage.infos.SetText(string(infosData))
 			u.app.Draw()
 		case content[1]:
 			events, err := u.client.Events(u.tabPage.ctx, u.namespace, u.pod)
 			if err != nil {
 				return
 			}
-			eventsData, err := json.MarshalIndent(&events, "", "  ")
-			if err != nil {
+			if len(events) == 0 {
+				u.tabPage.events.SetCellSimple(0, 0, "No Events")
+				u.app.Draw()
 				return
 			}
-			u.tabPage.contents.SetText(string(eventsData))
+			titles := [5]string{"Name", "Reason", "Type", "Message", "CreationTime"}
+			for i, title := range titles {
+				cell := tview.NewTableCell(title).
+					SetAttributes(tcell.AttrBold).
+					SetTextColor(tcell.ColorBlue)
+				u.tabPage.events.SetCell(0, i, cell)
+			}
+			for i, event := range events {
+				clos := [5]string{event.Name, event.Reason, event.Type, event.Message, event.CreationTime.String()}
+				for j, clo := range clos {
+					u.tabPage.events.SetCellSimple(i+1, j, clo)
+				}
+			}
 			u.app.Draw()
 		case content[2]:
 			logs, err := u.client.Logs(u.tabPage.ctx, u.namespace, u.pod)
@@ -263,7 +305,7 @@ func (u *ui) updateTabPageContents() {
 				return
 			}
 			for log := range logs {
-				fmt.Fprintf(u.tabPage.contents, log)
+				fmt.Fprintf(u.tabPage.logs, log+"\n")
 				u.app.Draw()
 			}
 		}

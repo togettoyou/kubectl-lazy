@@ -144,8 +144,10 @@ func (c *client) Events(ctx context.Context, namespace, podName string) ([]PodEv
 }
 
 func (c *client) Logs(ctx context.Context, namespace, podName string) (chan string, error) {
+	tailLines := int64(120)
 	logs := c.set.CoreV1().Pods(namespace).GetLogs(podName, &v1.PodLogOptions{
-		Follow: true,
+		Follow:    true,
+		TailLines: &tailLines,
 	})
 	readCloser, err := logs.Stream(ctx)
 	if err != nil {
