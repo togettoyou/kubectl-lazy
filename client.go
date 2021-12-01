@@ -66,22 +66,22 @@ func (c *client) Pods(ctx context.Context, namespace string) ([]string, error) {
 }
 
 type PodInfo struct {
-	Name          string
-	Namespace     string
-	Priority      int32
-	Node          string
-	StartTime     time.Time
-	Labels        map[string]string
-	Annotations   map[string]string
-	Status        []v1.ContainerStatus
-	IP            string
-	IPs           []v1.PodIP
-	Containers    []v1.Container
-	Conditions    []v1.PodCondition
-	Volumes       []v1.Volume
-	QoSClass      v1.PodQOSClass
-	NodeSelectors map[string]string
-	Tolerations   []v1.Toleration
+	Name          string               `json:"[blue]name[white]"`
+	Namespace     string               `json:"[blue]namespace[white]"`
+	Priority      int32                `json:"[blue]priority[white]"`
+	Node          string               `json:"[blue]node[white]"`
+	StartTime     time.Time            `json:"[blue]start_time[white]"`
+	Labels        map[string]string    `json:"[blue]labels[white]"`
+	Annotations   map[string]string    `json:"[blue]annotations[white]"`
+	Status        []v1.ContainerStatus `json:"[blue]status[white]"`
+	IP            string               `json:"[blue]ip[white]"`
+	IPs           []v1.PodIP           `json:"[blue]i_ps[white]"`
+	Containers    []v1.Container       `json:"[blue]containers[white]"`
+	Conditions    []v1.PodCondition    `json:"[blue]conditions[white]"`
+	Volumes       []v1.Volume          `json:"[blue]volumes[white]"`
+	QoSClass      v1.PodQOSClass       `json:"[blue]qo_s_class[white]"`
+	NodeSelectors map[string]string    `json:"[blue]node_selectors[white]"`
+	Tolerations   []v1.Toleration      `json:"[blue]tolerations[white]"`
 }
 
 func (c *client) Infos(ctx context.Context, namespace, podName string) (*PodInfo, error) {

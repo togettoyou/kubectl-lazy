@@ -8,6 +8,7 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	v1 "k8s.io/api/core/v1"
 )
 
 type ui struct {
@@ -170,14 +171,20 @@ func (u *ui) initTabPages() {
 	contents := tview.NewFlex()
 
 	infos := tview.NewTextView()
-	infos.SetWordWrap(true).SetBorder(true).SetTitle(content[0])
+	infos.SetDynamicColors(true).
+		SetWordWrap(true).
+		SetBorder(true).
+		SetTitle(content[0])
 
 	events := tview.NewTable()
 	events.SetBorders(true)
-	events.SetTitle(content[1]).SetBorder(true)
+	events.SetTitle(content[1]).
+		SetBorder(true)
 
 	logs := tview.NewTextView()
-	logs.SetWordWrap(true).SetBorder(true).SetTitle(content[2])
+	logs.SetWordWrap(true).
+		SetBorder(true).
+		SetTitle(content[2])
 
 	contents.AddItem(infos, 0, 1, true)
 
@@ -217,7 +224,7 @@ func (u *ui) initTabPages() {
 			}
 			u.updateTabPageContents()
 		})
-	tabs.SetTitle("[Enter 前进] [Backspace 后退] [↑ ↓ 切换] [Ctrl C 退出]").SetBorder(true)
+	tabs.SetTitle("[Enter前进] [Backspace后退] [↑↓←→切换] [Ctrl+C退出]").SetBorder(true)
 
 	previousSlide := func() {
 		slide, _ := strconv.Atoi(tabs.GetHighlights()[0])
@@ -281,11 +288,9 @@ func (u *ui) updateTabPageContents() {
 				return
 			}
 			if len(events) == 0 {
-				u.tabPage.events.SetCellSimple(0, 0, "No Events")
-				u.app.Draw()
 				return
 			}
-			titles := [5]string{"Name", "Reason", "Type", "Message", "CreationTime"}
+			titles := [4]string{"Reason", "Type", "Message", "CreationTime"}
 			for i, title := range titles {
 				cell := tview.NewTableCell(title).
 					SetAttributes(tcell.AttrBold).
@@ -293,7 +298,10 @@ func (u *ui) updateTabPageContents() {
 				u.tabPage.events.SetCell(0, i, cell)
 			}
 			for i, event := range events {
-				clos := [5]string{event.Name, event.Reason, event.Type, event.Message, event.CreationTime.String()}
+				if event.Type != v1.EventTypeNormal {
+					event.Type = "[red]" + event.Type
+				}
+				clos := [4]string{event.Reason, event.Type, event.Message, event.CreationTime.String()}
 				for j, clo := range clos {
 					u.tabPage.events.SetCellSimple(i+1, j, clo)
 				}
