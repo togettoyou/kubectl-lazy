@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-version="0.0.3"
+version="0.1.0"
 
 while [ -n "$1" ]
 do
@@ -28,7 +28,7 @@ filename="kubectl-lazy_"$version"_"$goos"_"$goarch".tar.gz"
 
 rm -f $filename
 
-curl -LJO "https://mirror.ghproxy.com/https://github.com/togettoyou/kubectl-lazy/releases/download/v"$version"/"$filename""
+curl -LJO "https://ghproxy.com/https://github.com/togettoyou/kubectl-lazy/releases/download/v"$version"/"$filename""
 
 tar -xvf $filename
 

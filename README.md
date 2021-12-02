@@ -1,17 +1,17 @@
 # kubectl-lazy
 
-![Gif](https://mirror.ghproxy.com/https://github.com/togettoyou/kubectl-lazy/blob/main/demo.gif)
+![Gif](https://ghproxy.com/https://github.com/togettoyou/kubectl-lazy/blob/main/demo.gif)
 
 ## Install
 
 ```shell
-curl -sSL https://mirror.ghproxy.com/https://raw.githubusercontent.com/togettoyou/kubectl-lazy/main/install.sh | bash
+curl -sSL https://ghproxy.com/https://raw.githubusercontent.com/togettoyou/kubectl-lazy/main/install.sh | bash
 ```
 
 Or you can specify the version:
 
 ```shell
-curl -sSL https://mirror.ghproxy.com/https://raw.githubusercontent.com/togettoyou/kubectl-lazy/main/install.sh | bash -s -- -v 0.0.3
+curl -sSL https://ghproxy.com/https://raw.githubusercontent.com/togettoyou/kubectl-lazy/main/install.sh | bash -s -- -v 0.1.0
 ```
 
 ## Run
@@ -35,7 +35,7 @@ kubectl lazy -pprof 8888
 ## Uninstall
 
 ```shell
-curl -sSL https://mirror.ghproxy.com/https://raw.githubusercontent.com/togettoyou/kubectl-lazy/main/uninstall.sh | bash
+curl -sSL https://ghproxy.com/https://raw.githubusercontent.com/togettoyou/kubectl-lazy/main/uninstall.sh | bash
 ```
 
 ## Features
