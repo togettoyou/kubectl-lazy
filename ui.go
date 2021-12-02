@@ -64,6 +64,15 @@ func (tp *tabPage) clear() {
 	tp.ctx, tp.cancelFunc = context.WithCancel(context.Background())
 	tp.infos.Clear()
 	tp.events.Clear()
+	tp.containers.Clear()
+	tp.logs.Clear()
+}
+
+func (tp *tabPage) clearLogs() {
+	if tp.cancelFunc != nil {
+		tp.cancelFunc()
+	}
+	tp.ctx, tp.cancelFunc = context.WithCancel(context.Background())
 	tp.logs.Clear()
 }
 
@@ -98,7 +107,7 @@ func (u *ui) initView() {
 
 func (u *ui) initNamespaces() {
 	list := tview.NewList().ShowSecondaryText(false)
-	list.SetBorder(true).SetTitle("namespaces")
+	list.SetBorder(true).SetTitle("Namespaces")
 	list.SetFocusFunc(func() {
 		if u.namespace != "" {
 			return
@@ -128,8 +137,8 @@ func (u *ui) initNamespaces() {
 			}
 			for _, pod := range pods {
 				u.pods.AddItem(pod, "", 0, nil)
-				u.app.Draw()
 			}
+			u.app.Draw()
 		}()
 
 	})
@@ -147,7 +156,7 @@ func (u *ui) initNamespaces() {
 
 func (u *ui) initPods() {
 	list := tview.NewList().ShowSecondaryText(false)
-	list.SetBorder(true).SetTitle("pods")
+	list.SetBorder(true).SetTitle("Pods")
 	list.SetChangedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
 		u.tabPage.clear()
 
@@ -200,8 +209,22 @@ func (u *ui) initTabPages() {
 		return event
 	})
 
-	containers := tview.NewList()
+	containers := tview.NewList().ShowSecondaryText(false)
 	containers.SetBorder(true).SetTitle("Containers")
+	containers.SetChangedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
+		u.tabPage.clearLogs()
+
+		go func(container string) {
+			logs, err := u.client.Logs(u.tabPage.ctx, u.namespace, u.pod, container)
+			if err != nil {
+				return
+			}
+			for log := range logs {
+				fmt.Fprintf(u.tabPage.logs, log+"\n")
+				u.app.Draw()
+			}
+		}(mainText)
+	})
 	containers.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
 		case tcell.KeyBackspace2:
@@ -340,14 +363,14 @@ func (u *ui) updateTabPageContents() {
 			}
 			u.app.Draw()
 		case content[2]:
-			logs, err := u.client.Logs(u.tabPage.ctx, u.namespace, u.pod)
+			infos, err := u.client.Infos(u.tabPage.ctx, u.namespace, u.pod)
 			if err != nil {
 				return
 			}
-			for log := range logs {
-				fmt.Fprintf(u.tabPage.logs, log+"\n")
-				u.app.Draw()
+			for _, container := range infos.Containers {
+				u.tabPage.containers.AddItem(container.Name, "", 0, nil)
 			}
+			u.app.Draw()
 		}
 	}()
 }
