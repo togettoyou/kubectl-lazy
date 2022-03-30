@@ -1,6 +1,6 @@
 # kubectl-lazy
 
-![Gif](https://ghproxy.com/https://github.com/togettoyou/kubectl-lazy/blob/main/demo.gif)
+![Gif](https://github.com/togettoyou/kubectl-lazy/blob/main/demo.gif)
 
 ## Install
 
