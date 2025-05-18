@@ -28,7 +28,7 @@ filename="kubectl-lazy_"$version"_"$goos"_"$goarch".tar.gz"
 
 rm -f $filename
 
-curl -LJO "https://mirror.ghproxy.com/https://github.com/togettoyou/kubectl-lazy/releases/download/"$version"/"$filename""
+curl -LJO "https://github.com/togettoyou/kubectl-lazy/releases/download/"$version"/"$filename""
 
 tar -xvf $filename
 
