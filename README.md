@@ -35,7 +35,7 @@ kubectl lazy -pprof 8888
 ## Uninstall
 
 ```shell
-curl -sSL https://mirror.ghproxy.com/https://raw.githubusercontent.com/togettoyou/kubectl-lazy/main/uninstall.sh | bash
+curl -sSL https://raw.githubusercontent.com/togettoyou/kubectl-lazy/main/uninstall.sh | bash
 ```
 
 ## Features
